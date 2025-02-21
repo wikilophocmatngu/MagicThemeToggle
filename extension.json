@@ -1,0 +1,126 @@
+{
+	"name": "Theme Toggle",
+	"version": "1.2.0",
+
+	"author": [
+		"alex4401"
+	],
+	"url": "https://gitlab.mglolenstine.xyz/alex4401/mediawiki-extension-themetoggle",
+	"descriptionmsg": "themetoggle-desc",
+	"license-name": "GPL-3.0-or-later",
+	"type": "other",
+
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"platform": {
+			"php": ">= 7.4"
+		}
+	},
+
+	"MessagesDirs": {
+		"ThemeToggle.class": [
+			"i18n"
+		]
+	},
+
+	"ResourceFileModulePaths": {
+		"localBasePath": "modules",
+		"remoteExtPath": "ThemeToggle/modules"
+	},
+
+	"ResourceModules": {
+		"ext.themes.apply": {
+			"class": "MediaWiki\\Extension\\ThemeToggle\\ResourceLoader\\ThemeApplyModule",
+			"scripts": [
+				"inline.js"
+			]
+		},
+		"ext.themes.jsapi": {
+			"class": "MediaWiki\\Extension\\ThemeToggle\\ResourceLoader\\SharedJsModule",
+			"packageFiles": [
+				"shared.js",
+				{
+					"name": "config.json",
+					"callback": "MediaWiki\\Extension\\ThemeToggle\\Hooks\\ThemeLoadingHooks::getSiteConfigModuleContents"
+				}
+			],
+			"messages": [
+				"themetoggle-skinprefs"
+			],
+			"targets": [ "desktop", "mobile" ]
+		}
+	},
+
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\ThemeToggle\\": "includes/"
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+
+	"SpecialPages": {
+		"ThemeUsage": {
+			"class": "MediaWiki\\Extension\\ThemeToggle\\SpecialPages\\SpecialThemeUsage",
+			"services": [
+				"ThemeToggle.Config",
+				"ThemeToggle.ThemeAndFeatureRegistry"
+			]
+		}
+	},
+	
+	"HookHandlers": {
+		"CacheManagement": {
+			"class": "MediaWiki\\Extension\\ThemeToggle\\Hooks\\CacheManagementHooks",
+			"services": [
+				"ThemeToggle.ThemeAndFeatureRegistry"
+			]
+		},
+		"ThemeLoading": {
+			"class": "MediaWiki\\Extension\\ThemeToggle\\Hooks\\ThemeLoadingHooks",
+			"services": [
+				"ThemeToggle.Config",
+				"ThemeToggle.ThemeAndFeatureRegistry"
+			]
+		},
+		"Preferences": {
+			"class": "MediaWiki\\Extension\\ThemeToggle\\Hooks\\PreferencesHooks",
+			"services": [
+				"ThemeToggle.Config",
+				"ThemeToggle.ThemeAndFeatureRegistry"
+			]
+		}
+	},
+	"Hooks": {
+		"PageDeleteComplete": "CacheManagement",
+		"PageSaveComplete": "CacheManagement",
+		"BeforePageDisplay": "ThemeLoading",
+		"OutputPageAfterGetHeadLinksArray": "ThemeLoading",
+		"ResourceLoaderRegisterModules": "ThemeLoading",
+		"GetPreferences": "Preferences",
+		"UserGetDefaultOptions": "Preferences"
+	},
+
+	"config_prefix": "wgThemeToggle",
+	"config": {
+		"Default": {
+			"value": null
+		},
+		"DisableAutoDetection": {
+			"value": false
+		},
+		"SwitcherStyle": {
+			"value": "auto"
+		},
+		"EnableForAnonymousUsers": {
+			"value": true
+		},
+		"PreferenceGroup": {
+			"value": null
+		},
+		"LoadScriptOverride": {
+			"value": null
+		}
+	},
+
+	"manifest_version": 2
+}
